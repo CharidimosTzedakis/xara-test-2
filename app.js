@@ -37,6 +37,7 @@ function createDataTree (datapoints) {
             currentParentNode = parentNodeStack.pop();
           }
           if (!currentParentNode) {
+            currentParentNode = currentNode;
             dataTree.push(currentNode); //* fount a top level node
           }
           else {  //* case: currentNode.tier.startsWith(currentParentNode.tier)
