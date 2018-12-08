@@ -1,0 +1,11 @@
+{
+  "name": "xara-test-2",
+  "version": "1.0.0",
+  "description": "xara 2nd test",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Charidimos Tzedakis",
+  "license": "ISC"
+}
