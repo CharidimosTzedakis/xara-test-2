@@ -15,23 +15,23 @@ function createDataTree (datapoints) {
     
     //* create tree structure
     const dataTree = [];
-    let previousDataNode = {};
-    let currentOpentierLevel = 0;
-    let dataNodesNotFinalized = []; //* this holds data nodes that are not yet finalized
+    let currentParentNode = null;
+    let parentNodeStack = []; //* this stack holds data nodes that are not yet finalized
+    let currentNode = null;
     for (var datapoint of tierSorted) {
-      const currentTier = findDatapointTierLevel(datapoint);
-      
-      if (currentTier >= currentOpentierLevel) { //* will be either child of previous node or sibling
-        if (datapoint.tier === previousDataNode.tier) {
-
+      currentNode = Object.assign(datapoint, {children:[]});
+      if (!currentParentNode) {
+        currentParentNode = currentNode;
+      } else {
+        if (currentNode.tier === currentParentNode.tier ) { //* currentNode: will be child of current parent and wont have children
+          currentParentNode.children.push(currentNode);
+        } else if (currentNode.tier.startsWith(currentParentNode.tier)) { //* currentNode: will be child of current parent and might have children
+          currentParentNode.children.push(currentNode);
+          parentNodeStack.push(currentParentNode); //* push currentParentNode to the stack
+          currentParentNode = currentNode; //* this node is now the current parent
         }
-      } else { //* will be surely sibling
-
       }
     }
-
-    //* sort children
-
     return tierSorted;
 }
 
