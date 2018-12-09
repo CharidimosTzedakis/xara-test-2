@@ -19,13 +19,12 @@ function sortByStart(a,b) {
 function recursivelySortChildren (tree) {
   let dataTree = tree;
   for (let node of dataTree) {
-    if (dataTree.children.length>0) {
-      dataTree.children = recursivelySortChildren(dataTree.children);
+    if (node.children.length>0) {
+      node.children = recursivelySortChildren(node.children);
     }
   }
-  return dataTree;
+  return dataTree.sort(sortByStart);
 }
-
 
 function createDataTree (datapoints) {
 
@@ -33,13 +32,12 @@ function createDataTree (datapoints) {
     const tierSorted = datapoints.sort(sortByTier);
     
     //* create tree structure
-    const dataTree = [];
     let currentParentNode = null;
     let parentNodeStack = []; //* this stack holds data nodes that are not yet finalized
     let currentNode = null;
     let dataTree = [];
     for (let datapoint of tierSorted) {
-      currentNode = Object.assign(datapoint, {children:[]});
+      currentNode = Object.assign(datapoint, {children: []});
       if (!currentParentNode) { //* top level node
         currentParentNode = currentNode;
         dataTree.push(currentParentNode);
@@ -67,11 +65,12 @@ function createDataTree (datapoints) {
         }
       }
     }
+    // console.log(JSON.stringify(dataTree));
     // *recursively sort children by start
     dataTree = recursivelySortChildren(dataTree);
-    return tierSorted;
+    return dataTree;
 }
 
 console.log(datapoints.length);
 const dataTree = createDataTree(datapoints);
-console.log(dataTree);
+console.log(JSON.stringify(dataTree));
