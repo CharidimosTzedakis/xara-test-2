@@ -31,9 +31,9 @@ function createDataTree (datapoints) {
     //* 1. sort based on tier 
     const tierSorted = datapoints.sort(sortByTier);
     
-    //* create tree structure
+    //* 2. create tree structure
     let currentParentNode = null;
-    let parentNodeStack = []; //* this stack holds data nodes that are not yet finalized
+    let parentNodeStack = []; //* this is a stack that holds parent data nodes 
     let currentNode = null;
     let dataTree = [];
     for (let datapoint of tierSorted) {
@@ -42,7 +42,12 @@ function createDataTree (datapoints) {
         currentParentNode = currentNode;
         dataTree.push(currentParentNode);
       } else {
-        if (currentNode.tier === currentParentNode.tier ) { //* currentNode: is a leaf of the tree
+        if (currentNode.tier === currentParentNode.tier ) { //* currentNode: is surely a leaf of the tree
+          if (currentParentNode.start > currentNode.start) { //* if start of parent > start of child, swap roles 
+            let startSwap = currentParentNode.start;
+            currentParentNode.start = currentNode.start;
+            currentNode.start = startSwap;
+          }
           currentParentNode.children.push(currentNode);
         } else if (currentNode.tier.startsWith(currentParentNode.tier)) { //* currentNode: will be child of current parent and might have children
           currentParentNode.children.push(currentNode);
@@ -66,7 +71,7 @@ function createDataTree (datapoints) {
       }
     }
     // console.log(JSON.stringify(dataTree));
-    // *recursively sort children by start
+    //* 3. recursively sort children by start
     dataTree = recursivelySortChildren(dataTree);
     return dataTree;
 }
