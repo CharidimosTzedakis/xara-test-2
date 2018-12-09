@@ -1,6 +1,6 @@
 const datapoints = require('./datapoints');
 
-function sortByTierLevel(a,b) {
+function sortByTier(a,b) {
     if (a.tier < b.tier)
       return -1;
     if (a.tier > b.tier)
@@ -8,10 +8,29 @@ function sortByTierLevel(a,b) {
     return 0;
 }
 
+function sortByStart(a,b) {
+  if (a.start < b.start)
+    return -1;
+  if (a.start > b.start)
+    return 1;
+  return 0;
+}
+
+function recursivelySortChildren (tree) {
+  let dataTree = tree;
+  for (let node of dataTree) {
+    if (dataTree.children.length>0) {
+      dataTree.children = recursivelySortChildren(dataTree.children);
+    }
+  }
+  return dataTree;
+}
+
+
 function createDataTree (datapoints) {
 
     //* 1. sort based on tier 
-    const tierSorted = datapoints.sort(sortByTierLevel);
+    const tierSorted = datapoints.sort(sortByTier);
     
     //* create tree structure
     const dataTree = [];
@@ -19,7 +38,7 @@ function createDataTree (datapoints) {
     let parentNodeStack = []; //* this stack holds data nodes that are not yet finalized
     let currentNode = null;
     let dataTree = [];
-    for (var datapoint of tierSorted) {
+    for (let datapoint of tierSorted) {
       currentNode = Object.assign(datapoint, {children:[]});
       if (!currentParentNode) { //* top level node
         currentParentNode = currentNode;
@@ -38,9 +57,9 @@ function createDataTree (datapoints) {
           }
           if (!currentParentNode) {
             currentParentNode = currentNode;
-            dataTree.push(currentNode); //* fount a top level node
+            dataTree.push(currentParentNode); //* fount a top level node
           }
-          else {  //* case: currentNode.tier.startsWith(currentParentNode.tier)
+          else {  //* while case: currentNode.tier.startsWith(currentParentNode.tier)
             currentParentNode.children.push(currentNode);
             parentNodeStack.push(currentParentNode);
             currentParentNode = currentNode; 
@@ -48,6 +67,8 @@ function createDataTree (datapoints) {
         }
       }
     }
+    // *recursively sort children by start
+    dataTree = recursivelySortChildren(dataTree);
     return tierSorted;
 }
 
